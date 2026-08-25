@@ -99,6 +99,15 @@ class CatalogServiceTest {
   }
 
   @Test
+  void should_findOwningProduct_when_variantSkuIsKnown() {
+    // Arrange & Act
+    var result = catalogService.findProductByVariantSku(WORKHORSE_GREEN.sku());
+
+    // Assert
+    assertThat(result).contains(CLASSIC_WORKHORSE);
+  }
+
+  @Test
   void should_pairRecommendedVariantWithItsOwningProduct() {
     // Arrange
     List<String> selectedSkus = List.of(TITAN_ORANGE.sku());

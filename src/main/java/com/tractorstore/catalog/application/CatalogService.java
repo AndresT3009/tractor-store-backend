@@ -47,6 +47,14 @@ public class CatalogService {
     return catalogRepository.load().stores();
   }
 
+  /**
+   * Resuelve el producto dueño de un SKU. Lo usan los módulos cart y order para enriquecer sus
+   * líneas (nombre, precio, imagen) sin duplicar datos de catálogo.
+   */
+  public Optional<Product> findProductByVariantSku(String sku) {
+    return catalogRepository.load().findByVariantSku(sku);
+  }
+
   public List<RecommendedVariant> recommend(List<String> selectedSkus) {
     ProductCatalog catalog = catalogRepository.load();
     return catalog.recommend(selectedSkus, RECOMMENDATION_LIMIT).stream()
