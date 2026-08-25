@@ -10,17 +10,18 @@ import org.springframework.stereotype.Service;
 
 /**
  * Orquesta {@link ProductCatalog} para responder a los casos de uso del equipo Explore. No conoce
- * HTTP: la capa web es quien traduce esto a DTOs de respuesta.
+ * HTTP ni PostgreSQL: pide un snapshot fresco del catálogo a {@link CatalogRepository} en cada caso
+ * de uso, sin que le importe si viene de PostgreSQL o de cualquier otra fuente.
  */
 @Service
 public class CatalogService {
 
   private static final int RECOMMENDATION_LIMIT = 4;
 
-  private final ProductCatalog catalog;
+  private final CatalogRepository catalogRepository;
 
-  public CatalogService(ProductCatalog catalog) {
-    this.catalog = catalog;
+  public CatalogService(CatalogRepository catalogRepository) {
+    this.catalogRepository = catalogRepository;
   }
 
   /** Teasers de categorías destacados para la home. Siempre las dos categorías conocidas. */
@@ -35,18 +36,19 @@ public class CatalogService {
   }
 
   public List<Product> productsByCategory(ProductCategory category) {
-    return catalog.byCategory(category);
+    return catalogRepository.load().byCategory(category);
   }
 
   public Optional<Product> findProduct(String productId) {
-    return catalog.findById(productId);
+    return catalogRepository.load().findById(productId);
   }
 
   public List<Store> stores() {
-    return catalog.stores();
+    return catalogRepository.load().stores();
   }
 
   public List<RecommendedVariant> recommend(List<String> selectedSkus) {
+    ProductCatalog catalog = catalogRepository.load();
     return catalog.recommend(selectedSkus, RECOMMENDATION_LIMIT).stream()
         .map(
             variant ->

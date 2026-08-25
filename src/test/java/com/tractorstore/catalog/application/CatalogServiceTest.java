@@ -1,6 +1,7 @@
 package com.tractorstore.catalog.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.lenient;
 
 import com.tractorstore.catalog.domain.Product;
 import com.tractorstore.catalog.domain.ProductCatalog;
@@ -9,8 +10,13 @@ import com.tractorstore.catalog.domain.Store;
 import com.tractorstore.catalog.domain.Variant;
 import java.math.BigDecimal;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class CatalogServiceTest {
 
   private static final Variant TITAN_ORANGE =
@@ -41,9 +47,18 @@ class CatalogServiceTest {
   private static final Store AURORA =
       new Store("aurora", "Aurora Flagship", "Astronaut Way 1", "Arlington");
 
-  private final CatalogService catalogService =
-      new CatalogService(
-          new ProductCatalog(List.of(AUTONOMOUS_TITAN, CLASSIC_WORKHORSE), List.of(AURORA)));
+  @Mock private CatalogRepository catalogRepository;
+
+  private CatalogService catalogService;
+
+  @BeforeEach
+  void setUp() {
+    catalogService = new CatalogService(catalogRepository);
+    lenient()
+        .when(catalogRepository.load())
+        .thenReturn(
+            new ProductCatalog(List.of(AUTONOMOUS_TITAN, CLASSIC_WORKHORSE), List.of(AURORA)));
+  }
 
   @Test
   void should_exposeBothKnownCategories_when_buildingHomeTeasers() {
