@@ -123,4 +123,22 @@ class ProductCatalogTest {
     // Act & Assert
     assertThatIllegalArgumentException().isThrownBy(() -> catalog.recommend(selectedSkus, 0));
   }
+
+  @Test
+  void should_findOwningProduct_when_variantSkuExists() {
+    // Arrange & Act
+    var result = catalog.findByVariantSku(WORKHORSE_GREEN.sku());
+
+    // Assert
+    assertThat(result).contains(CLASSIC_WORKHORSE);
+  }
+
+  @Test
+  void should_returnEmpty_when_variantSkuDoesNotExist() {
+    // Arrange & Act
+    var result = catalog.findByVariantSku("does-not-exist");
+
+    // Assert
+    assertThat(result).isEmpty();
+  }
 }

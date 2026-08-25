@@ -41,6 +41,11 @@ public final class ProductCatalog {
     return stores;
   }
 
+  /** Encuentra el producto dueño de una variante, dado su SKU. */
+  public Optional<Product> findByVariantSku(String sku) {
+    return products.stream().filter(product -> product.variantBySku(sku).isPresent()).findFirst();
+  }
+
   /**
    * Recomienda hasta {@code limit} variantes de color similar a las de los SKUs indicados,
    * excluyendo las de los propios productos ya seleccionados.
