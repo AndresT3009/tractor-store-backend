@@ -4,14 +4,17 @@ import static org.mockito.BDDMockito.given;
 
 import com.tractorstore.inventory.application.InventoryService;
 import com.tractorstore.inventory.domain.StockLevel;
+import com.tractorstore.shared.web.SecurityConfig;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 @WebMvcTest(InventoryController.class)
+@Import(SecurityConfig.class)
 class InventoryControllerTest {
 
   @Autowired private MockMvcTester mvc;

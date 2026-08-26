@@ -12,6 +12,7 @@ import com.tractorstore.catalog.domain.Store;
 import com.tractorstore.order.application.OrderService;
 import com.tractorstore.order.domain.Order;
 import com.tractorstore.order.domain.OrderLine;
+import com.tractorstore.shared.web.SecurityConfig;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -19,11 +20,14 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 @WebMvcTest(OrderController.class)
+@Import(SecurityConfig.class)
 class OrderControllerTest {
 
   private static final Store AURORA =
@@ -61,6 +65,7 @@ class OrderControllerTest {
     // Act & Assert
     mvc.post()
         .uri("/api/orders")
+        .session(new MockHttpSession())
         .contentType(MediaType.APPLICATION_JSON)
         .content(
             "{\"firstName\":\"Ada\",\"lastName\":\"Lovelace\",\"storeId\":\"aurora-flagship\"}")
@@ -79,6 +84,7 @@ class OrderControllerTest {
     // Act & Assert
     mvc.post()
         .uri("/api/orders")
+        .session(new MockHttpSession())
         .contentType(MediaType.APPLICATION_JSON)
         .content(
             "{\"firstName\":\"Ada\",\"lastName\":\"Lovelace\",\"storeId\":\"aurora-flagship\"}")
@@ -96,6 +102,7 @@ class OrderControllerTest {
     // Act & Assert
     mvc.post()
         .uri("/api/orders")
+        .session(new MockHttpSession())
         .contentType(MediaType.APPLICATION_JSON)
         .content("{\"firstName\":\"Ada\",\"lastName\":\"Lovelace\",\"storeId\":\"does-not-exist\"}")
         .assertThat()
@@ -110,6 +117,7 @@ class OrderControllerTest {
     // Act & Assert
     mvc.get()
         .uri("/api/orders/{id}", "order-1")
+        .session(new MockHttpSession())
         .assertThat()
         .hasStatusOk()
         .bodyJson()
@@ -123,6 +131,28 @@ class OrderControllerTest {
     given(orderService.findById("unknown")).willReturn(Optional.empty());
 
     // Act & Assert
-    mvc.get().uri("/api/orders/{id}", "unknown").assertThat().hasStatus(404);
+    mvc.get()
+        .uri("/api/orders/{id}", "unknown")
+        .session(new MockHttpSession())
+        .assertThat()
+        .hasStatus(404);
+  }
+
+  @Test
+  void should_reject_when_placingOrderWithoutAnExistingSession() {
+    // Act & Assert
+    mvc.post()
+        .uri("/api/orders")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(
+            "{\"firstName\":\"Ada\",\"lastName\":\"Lovelace\",\"storeId\":\"aurora-flagship\"}")
+        .assertThat()
+        .hasStatus(401);
+  }
+
+  @Test
+  void should_reject_when_gettingOrderWithoutAnExistingSession() {
+    // Act & Assert
+    mvc.get().uri("/api/orders/{id}", "order-1").assertThat().hasStatus(401);
   }
 }

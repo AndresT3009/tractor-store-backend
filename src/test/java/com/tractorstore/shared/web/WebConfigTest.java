@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @WebMvcTest(controllers = WebConfigTest.PingController.class)
-@Import({WebConfig.class, WebConfigTest.PingController.class})
+@Import({WebConfig.class, SecurityConfig.class, WebConfigTest.PingController.class})
 @TestPropertySource(properties = "tractor-store.cors.allowed-origins=http://localhost:4200")
 class WebConfigTest {
 
