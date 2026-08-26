@@ -22,9 +22,10 @@ import org.springframework.web.server.ResponseStatusException;
 /**
  * Endpoints del módulo Order, consumidos por mfe-checkout.
  *
- * <p>Orquesta explícitamente el flujo de checkout (leer carrito de la sesión → validar → crear
- * pedido → vaciar carrito) porque Cart y Order todavía se comunican por llamada directa, no por
- * eventos: ese desacople es la Fase B10, pendiente.
+ * <p>Lee el carrito de la sesión y lo valida directamente (llamada síncrona a {@code
+ * CartService.getCart}, aceptable: es una lectura, no un efecto secundario entre módulos). Vaciar
+ * el carrito tras confirmar el pedido ya no es responsabilidad de este controller: {@code
+ * OrderService} publica {@code OrderPlaced} y es el módulo cart quien lo escucha (Fase B10).
  */
 @RestController
 @RequestMapping("/api/orders")
@@ -57,8 +58,8 @@ class OrderController {
     }
 
     Order order =
-        orderService.placeOrder(request.firstName(), request.lastName(), request.storeId(), cart);
-    cartService.clear(sessionId);
+        orderService.placeOrder(
+            request.firstName(), request.lastName(), request.storeId(), cart, sessionId);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(OrderResponse.from(order));
   }

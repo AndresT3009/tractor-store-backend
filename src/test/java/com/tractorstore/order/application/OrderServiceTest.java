@@ -13,6 +13,7 @@ import com.tractorstore.catalog.domain.ProductCategory;
 import com.tractorstore.catalog.domain.Variant;
 import com.tractorstore.order.domain.Order;
 import com.tractorstore.order.domain.OrderLine;
+import com.tractorstore.shared.events.OrderPlaced;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -43,13 +45,14 @@ class OrderServiceTest {
 
   @Mock private OrderRepository orderRepository;
   @Mock private CatalogService catalogService;
+  @Mock private ApplicationEventPublisher eventPublisher;
 
   private OrderService orderService;
 
   @BeforeEach
   void setUp() {
     Clock fixedClock = Clock.fixed(FIXED_INSTANT, ZoneOffset.UTC);
-    orderService = new OrderService(orderRepository, catalogService, fixedClock);
+    orderService = new OrderService(orderRepository, catalogService, eventPublisher, fixedClock);
   }
 
   @Test
@@ -60,7 +63,7 @@ class OrderServiceTest {
         .willReturn(Optional.of(SMARTFARM_TITAN));
 
     // Act
-    Order order = orderService.placeOrder("Ada", "Lovelace", "aurora-flagship", cart);
+    Order order = orderService.placeOrder("Ada", "Lovelace", "aurora-flagship", cart, "session-1");
 
     // Assert
     assertThat(order.firstName()).isEqualTo("Ada");
@@ -70,6 +73,7 @@ class OrderServiceTest {
     assertThat(order.lines().get(0).unitPrice()).isEqualByComparingTo("4000.00");
     assertThat(order.totalPrice()).isEqualByComparingTo("8000.00");
     verify(orderRepository).save(order);
+    verify(eventPublisher).publishEvent(new OrderPlaced(order.id(), "session-1"));
   }
 
   @Test
@@ -80,7 +84,8 @@ class OrderServiceTest {
 
     // Act & Assert
     assertThatIllegalStateException()
-        .isThrownBy(() -> orderService.placeOrder("Ada", "Lovelace", "aurora-flagship", cart));
+        .isThrownBy(
+            () -> orderService.placeOrder("Ada", "Lovelace", "aurora-flagship", cart, "session-1"));
   }
 
   @Test

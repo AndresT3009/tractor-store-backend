@@ -1,8 +1,8 @@
 package com.tractorstore.order.web;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 import com.tractorstore.cart.application.CartService;
 import com.tractorstore.cart.domain.Cart;
@@ -44,17 +44,18 @@ class OrderControllerTest {
   @MockitoBean private CatalogService catalogService;
 
   @Test
-  void should_placeOrderAndClearCart_when_cartHasItemsAndStoreIsValid() {
+  void should_placeOrder_when_cartHasItemsAndStoreIsValid() {
     // Arrange
     given(cartService.getCart(anyString()))
         .willReturn(new Cart(List.of(new CartLineItem("SF-TITAN-COPPER", 1))));
     given(catalogService.stores()).willReturn(List.of(AURORA));
     given(
             orderService.placeOrder(
-                "Ada",
-                "Lovelace",
-                "aurora-flagship",
-                new Cart(List.of(new CartLineItem("SF-TITAN-COPPER", 1)))))
+                eq("Ada"),
+                eq("Lovelace"),
+                eq("aurora-flagship"),
+                eq(new Cart(List.of(new CartLineItem("SF-TITAN-COPPER", 1)))),
+                anyString()))
         .willReturn(PLACED_ORDER);
 
     // Act & Assert
@@ -68,7 +69,6 @@ class OrderControllerTest {
         .bodyJson()
         .extractingPath("$.id")
         .isEqualTo("order-1");
-    verify(cartService).clear(anyString());
   }
 
   @Test
