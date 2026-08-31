@@ -1,0 +1,11 @@
+# Perfil "prod" de la Fase B11: logging JSON estructurado para que sistemas como ELK/Loki/Datadog
+# puedan indexarlo. El resto de la configuración de ambientes (application-dev.yml, secretos,
+# niveles de log finos) se formaliza en la Fase B12.
+logging:
+  structured:
+    format:
+      console: ecs
+  level:
+    root: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
