@@ -15,8 +15,27 @@ services:
       timeout: 5s
       retries: 10
 
-  # Fase B11: el backend NO corre en este compose (se levanta con ./mvnw spring-boot:run en el
-  # host), por eso Prometheus scrapea host.docker.internal en vez de un nombre de servicio.
+  # Fase B12: el backend containerizado, para que "docker compose up" a secas levante el Tractor
+  # Store completo. La etiqueta org.springframework.boot.ignore hace que spring-boot-docker-compose
+  # IGNORE este servicio específico durante el día a día con "./mvnw spring-boot:run" (que sigue
+  # gestionando solo postgres/prometheus/grafana) — evita dos instancias del backend peleando por el
+  # puerto 8080. No se incluye Keycloak: la Fase B8 decidió explícitamente carrito anónimo por sesión
+  # en vez de un usuario autenticado, así que no hay nada que Keycloak resuelva aquí.
+  backend:
+    build: .
+    profiles: ["full"]
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/tractor_store
+      DATABASE_USERNAME: tractor_store
+      DATABASE_PASSWORD: tractor_store
+      CORS_ALLOWED_ORIGINS: http://localhost:4200
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   prometheus:
     image: prom/prometheus:v3.1.0
     volumes:

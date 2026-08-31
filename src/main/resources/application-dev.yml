@@ -1,0 +1,7 @@
+# Fase B12: perfil activo por defecto (ver spring.profiles.default en application.yml) cuando no
+# se fija SPRING_PROFILES_ACTIVE explícitamente, pensado para correr el backend en el equipo local
+# contra el docker-compose.yml del repo.
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

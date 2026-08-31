@@ -1,6 +1,8 @@
 spring:
   application:
     name: tractor-store-backend
+  profiles:
+    default: dev
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5433/tractor_store}
     username: ${DATABASE_USERNAME:tractor_store}
@@ -31,6 +33,3 @@ management:
 logging:
   pattern:
     correlation: "[%X{traceId:-}] "
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE

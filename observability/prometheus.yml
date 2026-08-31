@@ -2,7 +2,15 @@ global:
   scrape_interval: 5s
 
 scrape_configs:
+  # Dos targets porque el backend puede correr de dos formas: en el host via "mvnw spring-boot:run"
+  # (host.docker.internal) o containerizado por este mismo compose (nombre de servicio "backend").
+  # El que no esté activo simplemente queda "down" en Prometheus, sin romper el otro.
   - job_name: tractor-store-backend
     metrics_path: /actuator/prometheus
     static_configs:
       - targets: ["host.docker.internal:8080"]
+        labels:
+          run_mode: host
+      - targets: ["backend:8080"]
+        labels:
+          run_mode: compose
