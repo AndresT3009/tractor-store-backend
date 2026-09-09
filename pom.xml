@@ -21,6 +21,7 @@
 		<archunit.version>1.5.0</archunit.version>
 		<springdoc-openapi.version>3.1.0</springdoc-openapi.version>
 		<jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
+		<sonar.organization>andrest3009</sonar.organization>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
