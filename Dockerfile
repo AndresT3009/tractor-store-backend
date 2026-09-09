@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 
-# Fase B12: build en dos etapas — la imagen final solo lleva el JRE y el jar, no el JDK ni el
-# repositorio Maven completo. mvnw dependency:go-offline en su propia capa aprovecha la cache de
-# Docker: si solo cambia código fuente (no el pom.xml), esta capa no se reconstruye.
+# Build en dos etapas: la imagen final solo lleva el JRE y el jar, no el JDK ni el repositorio
+# Maven completo. mvnw dependency:go-offline en su propia capa aprovecha la cache de Docker: si
+# solo cambia código fuente (no el pom.xml), esta capa no se reconstruye.
 FROM eclipse-temurin:21-jdk-alpine AS build
 WORKDIR /app
 

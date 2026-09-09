@@ -91,8 +91,8 @@ El servicio `backend` del `docker-compose.yml` usa el perfil de Compose `full` a
 `./mvnw spring-boot:run` no intenta levantar una segunda instancia del backend y pelear por el puerto
 8080 contra la que ya corre en el host.
 
-No se incluye Keycloak: la Fase B8 decidió explícitamente carrito anónimo por sesión en vez de un
-usuario autenticado (ver guía de la Fase B8), así que no hay nada que Keycloak resuelva en este stack.
+No se incluye Keycloak: el carrito es anónimo por sesión en vez de requerir un usuario autenticado,
+así que no hay nada que Keycloak resuelva en este stack.
 
 ### Variables de entorno
 
@@ -134,4 +134,10 @@ requiere Docker corriendo), `ArchitectureTest` (ArchUnit) y `ModularityTests`
 ## CI
 
 `.github/workflows/ci.yml`: lint (Spotless) → tests + ArchUnit + Modulith verify (`./mvnw verify`) →
-build de la imagen Docker. Corre en cada push/PR a `main` y `develop`.
+build de la imagen Docker. Corre en cada push/PR a `main` y `develop`. Además,
+`.github/workflows/sonarcloud.yml` corre el análisis de SonarCloud en cada push a `main` y cada PR.
+
+## Cómo desplegarlo
+
+Ver [`DEPLOYMENT.md`](DEPLOYMENT.md) para la guía completa de despliegue en Railway (Postgres
+administrado, variables de entorno, healthcheck).
