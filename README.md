@@ -6,7 +6,6 @@ implementa el catálogo, inventario, carrito y pedidos descritos en la
 Angular del repo hermano `tractor-store-frontend`.
 
 ## Stack
-
 Java 21 · Spring Boot 4.1 (Spring Framework 7) · Spring Modulith · Spring Data JPA + PostgreSQL 18 ·
 Flyway · Spring Security · Spring Cache (Caffeine) · Micrometer + Prometheus + Grafana · Testcontainers.
 
