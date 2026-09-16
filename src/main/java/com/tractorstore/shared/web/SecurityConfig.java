@@ -11,10 +11,9 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 /**
- * Fase B8: catálogo, inventario y carrito quedan públicos; confirmar o consultar un pedido exige
- * una sesión de carrito ya existente (ver {@link CartSessionAuthenticationFilter}), no un usuario
- * autenticado — la guía deja explícitamente esa alternativa ("mantienes la cookie de sesión para el
- * carrito anónimo") en vez de Keycloak/JWT, decisión tomada con el usuario.
+ * Catálogo, inventario y carrito quedan públicos; confirmar o consultar un pedido exige una sesión
+ * de carrito ya existente (ver {@link CartSessionAuthenticationFilter}), no un usuario autenticado
+ * — carrito anónimo por sesión en vez de Keycloak/JWT, decisión tomada con el usuario.
  *
  * <p>CSRF desactivado a propósito: es una API JSON consumida por una SPA vía CORS con orígenes
  * explícitos ({@link CorsProperties}), no un flujo de formularios/login tradicional donde CSRF
