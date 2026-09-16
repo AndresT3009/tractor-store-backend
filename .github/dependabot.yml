@@ -5,16 +5,24 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
-    groups:
-      spring-boot:
-        patterns:
-          - "org.springframework.boot:*"
-          - "org.springframework.modulith:*"
+    # Sin agrupar Spring Boot/Modulith: dependabot/fetch-metadata no expone un update-type confiable
+    # para PRs agrupados, y eso dejó pasar bumps sin revisar por el auto-merge. Cada dependencia por
+    # separado sí reporta su propio update-type.
+    ignore:
+      - dependency-name: "org.springframework.boot:*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.springframework.modulith:*"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "weekly"
+    # Java 21 es una decisión explícita del proyecto (no la última versión disponible) — un bump de
+    # imagen base no debe subir la major de Java sin revisión manual.
+    ignore:
+      - dependency-name: "eclipse-temurin"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
