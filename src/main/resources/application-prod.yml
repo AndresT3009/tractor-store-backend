@@ -1,0 +1,9 @@
+# Logging JSON estructurado para que sistemas como ELK/Loki/Datadog puedan indexarlo.
+logging:
+  structured:
+    format:
+      console: ecs
+  level:
+    root: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN

@@ -1,0 +1,7 @@
+# Fase B12: perfil activado explícitamente por AbstractIntegrationTest (@ActiveProfiles("test"))
+# para los tests con Spring context real. Mismo nivel de detalle de SQL que dev: ayuda a depurar un
+# test de integración que falla sin tener que cambiar el nivel de log a mano.
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

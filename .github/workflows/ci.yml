@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      # Falla rápido en un problema de formato antes de pagar el costo de Testcontainers.
+      - name: Lint (Spotless)
+        run: ./mvnw spotless:check
+
+      # mvn verify corre en una sola pasada: tests unitarios, tests de integración con
+      # Testcontainers (Docker ya viene preinstalado en los runners de GitHub), ArchUnit y
+      # Spring Modulith ApplicationModules.verify() — todos son tests JUnit normales en src/test.
+      - name: Tests + ArchUnit + Modulith verify
+        run: ./mvnw verify
+
+      - name: Build Docker image
+        run: docker build -t tractor-store-backend:${{ github.sha }} .
