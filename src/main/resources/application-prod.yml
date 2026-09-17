@@ -1,3 +1,16 @@
+# La cookie de sesión del carrito (JSESSIONID) viaja entre orígenes distintos en producción (cada
+# app del frontend y el backend viven en su propio dominio de Railway) — sin SameSite=None el
+# navegador nunca la reenvía en esas peticiones cross-site, así que cada llamada terminaba
+# creando una sesión nueva y el carrito parecía no guardar nada. SameSite=None exige Secure
+# (cookie solo sobre HTTPS), que es como Railway sirve todo. En dev (localhost) no hace falta:
+# distintos puertos del mismo host siguen contando como same-site.
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: none
+        secure: true
+
 # Logging JSON estructurado para que sistemas como ELK/Loki/Datadog puedan indexarlo.
 logging:
   structured:
