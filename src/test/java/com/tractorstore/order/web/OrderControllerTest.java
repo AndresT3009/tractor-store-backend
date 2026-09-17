@@ -31,7 +31,12 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 class OrderControllerTest {
 
   private static final Store AURORA =
-      new Store("aurora-flagship", "Aurora Flagship", "Astronaut Way 1", "Arlington");
+      new Store(
+          "aurora-flagship",
+          "Aurora Flagship",
+          "Astronaut Way 1",
+          "Arlington",
+          "/images/stores/aurora-flagship.jpg");
   private static final Order PLACED_ORDER =
       new Order(
           "order-1",

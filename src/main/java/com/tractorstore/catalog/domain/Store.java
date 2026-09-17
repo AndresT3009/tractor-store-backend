@@ -9,16 +9,18 @@ import java.util.Objects;
  * @param name nombre comercial de la tienda
  * @param addressLine dirección (calle y número)
  * @param city ciudad donde está ubicada
+ * @param imageUrl foto representativa de la tienda
  */
-public record Store(String id, String name, String addressLine, String city) {
+public record Store(String id, String name, String addressLine, String city, String imageUrl) {
 
   public Store {
     Objects.requireNonNull(id, "id no puede ser null");
     Objects.requireNonNull(name, "name no puede ser null");
     Objects.requireNonNull(addressLine, "addressLine no puede ser null");
     Objects.requireNonNull(city, "city no puede ser null");
-    if (id.isBlank() || name.isBlank() || city.isBlank()) {
-      throw new IllegalArgumentException("id, name y city no pueden estar vacíos");
+    Objects.requireNonNull(imageUrl, "imageUrl no puede ser null");
+    if (id.isBlank() || name.isBlank() || city.isBlank() || imageUrl.isBlank()) {
+      throw new IllegalArgumentException("id, name, city e imageUrl no pueden estar vacíos");
     }
   }
 }

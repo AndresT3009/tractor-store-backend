@@ -136,7 +136,13 @@ class CatalogControllerTest {
     // Arrange
     given(catalogService.stores())
         .willReturn(
-            List.of(new Store("aurora", "Aurora Flagship", "Astronaut Way 1", "Arlington")));
+            List.of(
+                new Store(
+                    "aurora",
+                    "Aurora Flagship",
+                    "Astronaut Way 1",
+                    "Arlington",
+                    "/images/stores/aurora.jpg")));
 
     // Act & Assert
     mvc.get()

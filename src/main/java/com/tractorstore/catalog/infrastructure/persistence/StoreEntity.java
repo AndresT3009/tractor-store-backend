@@ -22,16 +22,20 @@ class StoreEntity {
   @Column(nullable = false)
   private String city;
 
+  @Column(name = "image_url", nullable = false)
+  private String imageUrl;
+
   protected StoreEntity() {}
 
-  StoreEntity(String id, String name, String addressLine, String city) {
+  StoreEntity(String id, String name, String addressLine, String city, String imageUrl) {
     this.id = id;
     this.name = name;
     this.addressLine = addressLine;
     this.city = city;
+    this.imageUrl = imageUrl;
   }
 
   Store toDomain() {
-    return new Store(id, name, addressLine, city);
+    return new Store(id, name, addressLine, city, imageUrl);
   }
 }

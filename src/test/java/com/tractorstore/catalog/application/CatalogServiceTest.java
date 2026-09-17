@@ -45,7 +45,8 @@ class CatalogServiceTest {
           List.of(WORKHORSE_GREEN));
 
   private static final Store AURORA =
-      new Store("aurora", "Aurora Flagship", "Astronaut Way 1", "Arlington");
+      new Store(
+          "aurora", "Aurora Flagship", "Astronaut Way 1", "Arlington", "/images/stores/aurora.jpg");
 
   @Mock private CatalogRepository catalogRepository;
 
