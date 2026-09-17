@@ -2,7 +2,11 @@ package com.tractorstore.order.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import com.tractorstore.cart.domain.Cart;
@@ -11,6 +15,8 @@ import com.tractorstore.catalog.application.CatalogService;
 import com.tractorstore.catalog.domain.Product;
 import com.tractorstore.catalog.domain.ProductCategory;
 import com.tractorstore.catalog.domain.Variant;
+import com.tractorstore.inventory.application.InventoryService;
+import com.tractorstore.inventory.domain.InsufficientStockException;
 import com.tractorstore.order.domain.Order;
 import com.tractorstore.order.domain.OrderLine;
 import com.tractorstore.shared.events.OrderPlaced;
@@ -45,6 +51,7 @@ class OrderServiceTest {
 
   @Mock private OrderRepository orderRepository;
   @Mock private CatalogService catalogService;
+  @Mock private InventoryService inventoryService;
   @Mock private ApplicationEventPublisher eventPublisher;
 
   private OrderService orderService;
@@ -52,7 +59,9 @@ class OrderServiceTest {
   @BeforeEach
   void setUp() {
     Clock fixedClock = Clock.fixed(FIXED_INSTANT, ZoneOffset.UTC);
-    orderService = new OrderService(orderRepository, catalogService, eventPublisher, fixedClock);
+    orderService =
+        new OrderService(
+            orderRepository, catalogService, inventoryService, eventPublisher, fixedClock);
   }
 
   @Test
@@ -74,6 +83,24 @@ class OrderServiceTest {
     assertThat(order.totalPrice()).isEqualByComparingTo("8000.00");
     verify(orderRepository).save(order);
     verify(eventPublisher).publishEvent(new OrderPlaced(order.id(), "session-1"));
+    verify(inventoryService).decrementStock("SF-TITAN-COPPER", 2);
+  }
+
+  @Test
+  void should_rejectOrderAndNotSaveIt_when_stockIsNotEnough() {
+    // Arrange
+    Cart cart = new Cart(List.of(new CartLineItem("SF-TITAN-COPPER", 2)));
+    given(catalogService.findProductByVariantSku("SF-TITAN-COPPER"))
+        .willReturn(Optional.of(SMARTFARM_TITAN));
+    willThrow(new InsufficientStockException("SF-TITAN-COPPER"))
+        .given(inventoryService)
+        .decrementStock("SF-TITAN-COPPER", 2);
+
+    // Act & Assert
+    assertThatThrownBy(
+            () -> orderService.placeOrder("Ada", "Lovelace", "aurora-flagship", cart, "session-1"))
+        .isInstanceOf(InsufficientStockException.class);
+    verify(orderRepository, never()).save(any());
   }
 
   @Test

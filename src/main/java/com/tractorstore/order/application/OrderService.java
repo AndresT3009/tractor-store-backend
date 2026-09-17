@@ -4,6 +4,7 @@ import com.tractorstore.cart.domain.Cart;
 import com.tractorstore.cart.domain.CartLineItem;
 import com.tractorstore.catalog.application.CatalogService;
 import com.tractorstore.catalog.domain.Product;
+import com.tractorstore.inventory.application.InventoryService;
 import com.tractorstore.order.domain.Order;
 import com.tractorstore.order.domain.OrderLine;
 import com.tractorstore.shared.events.OrderPlaced;
@@ -31,16 +32,19 @@ public class OrderService {
 
   private final OrderRepository orderRepository;
   private final CatalogService catalogService;
+  private final InventoryService inventoryService;
   private final ApplicationEventPublisher eventPublisher;
   private final Clock clock;
 
   public OrderService(
       OrderRepository orderRepository,
       CatalogService catalogService,
+      InventoryService inventoryService,
       ApplicationEventPublisher eventPublisher,
       Clock clock) {
     this.orderRepository = orderRepository;
     this.catalogService = catalogService;
+    this.inventoryService = inventoryService;
     this.eventPublisher = eventPublisher;
     this.clock = clock;
   }
@@ -49,6 +53,11 @@ public class OrderService {
   public Order placeOrder(
       String firstName, String lastName, String storeId, Cart cart, String sessionId) {
     List<OrderLine> lines = cart.items().stream().map(this::toOrderLine).toList();
+    // Antes de persistir nada: si algún SKU no tiene stock suficiente, InsufficientStockException
+    // aborta la transacción completa (rollback), sin dejar un pedido a medio confirmar.
+    for (CartLineItem item : cart.items()) {
+      inventoryService.decrementStock(item.sku(), item.quantity());
+    }
     Order order =
         new Order(
             UUID.randomUUID().toString(), firstName, lastName, storeId, lines, Instant.now(clock));

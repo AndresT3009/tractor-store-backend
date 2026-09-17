@@ -17,4 +17,9 @@ public class InventoryService {
   public Optional<StockLevel> stockOf(String sku) {
     return inventoryRepository.findBySku(sku);
   }
+
+  /** Descuenta stock al confirmar un pedido. Ver {@link InventoryRepository#decrement}. */
+  public void decrementStock(String sku, int quantity) {
+    inventoryRepository.decrement(sku, quantity);
+  }
 }

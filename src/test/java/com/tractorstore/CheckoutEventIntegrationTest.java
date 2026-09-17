@@ -14,6 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
  * {@code OrderPlaced} realmente vacía el carrito tras confirmar el pedido: order no llama a
  * cart.application.CartService.clear directamente, así que solo un test que dispare el commit de
  * transacción real puede verificar que el listener está conectado.
+ *
+ * <p>Usa COMMANDER-TEAL, no SF-TITAN-COPPER: esta compra descuenta stock real y de forma permanente
+ * (a propósito, es justo lo que el test necesita verificar indirectamente vía el commit real), en
+ * la misma base compartida por el resto de las clases de test (ver AbstractIntegrationTest) —
+ * JpaInventoryRepositoryIntegrationTest verifica el valor exacto sembrado de SF-TITAN-COPPER, así
+ * que comprarlo aquí lo dejaría en rojo según el orden en que corran las clases.
  */
 @SpringBootTest
 class CheckoutEventIntegrationTest extends AbstractIntegrationTest {
@@ -26,7 +32,7 @@ class CheckoutEventIntegrationTest extends AbstractIntegrationTest {
   @Test
   void should_clearCart_when_orderIsPlaced() {
     // Arrange
-    cartService.addItem(SESSION_ID, "SF-TITAN-COPPER");
+    cartService.addItem(SESSION_ID, "COMMANDER-TEAL");
     Cart cart = cartService.getCart(SESSION_ID);
 
     // Act

@@ -3,6 +3,7 @@ package com.tractorstore.order.web;
 import com.tractorstore.cart.application.CartService;
 import com.tractorstore.cart.domain.Cart;
 import com.tractorstore.catalog.application.CatalogService;
+import com.tractorstore.inventory.domain.InsufficientStockException;
 import com.tractorstore.order.application.OrderService;
 import com.tractorstore.order.domain.Order;
 import com.tractorstore.order.web.dto.OrderResponse;
@@ -57,9 +58,14 @@ class OrderController {
           HttpStatus.BAD_REQUEST, "Tienda desconocida: " + request.storeId());
     }
 
-    Order order =
-        orderService.placeOrder(
-            request.firstName(), request.lastName(), request.storeId(), cart, sessionId);
+    Order order;
+    try {
+      order =
+          orderService.placeOrder(
+              request.firstName(), request.lastName(), request.storeId(), cart, sessionId);
+    } catch (InsufficientStockException e) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+    }
 
     return ResponseEntity.status(HttpStatus.CREATED).body(OrderResponse.from(order));
   }

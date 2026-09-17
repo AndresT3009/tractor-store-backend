@@ -44,6 +44,10 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
         .hasStatus(401);
   }
 
+  // Usa COMMANDER-TEAL, no SF-TITAN-COPPER: este pedido real descuenta stock de verdad en la
+  // base compartida por el resto de las clases de test (ver AbstractIntegrationTest), y
+  // JpaInventoryRepositoryIntegrationTest verifica el valor exacto sembrado de SF-TITAN-COPPER —
+  // comprarlo aquí dejaría ese otro test en rojo según qué clase corra primero.
   @Test
   void should_allowPlacingOrder_whenSessionWasEstablishedByAddingToCart() {
     // Arrange
@@ -52,7 +56,7 @@ class SecurityIntegrationTest extends AbstractIntegrationTest {
         .uri("/api/cart/items")
         .session(session)
         .contentType(MediaType.APPLICATION_JSON)
-        .content("{\"sku\":\"SF-TITAN-COPPER\"}")
+        .content("{\"sku\":\"COMMANDER-TEAL\"}")
         .assertThat()
         .hasStatusOk();
 
