@@ -18,7 +18,7 @@
 		<spotless-maven-plugin.version>3.10.3</spotless-maven-plugin.version>
 		<google-java-format.version>1.36.1</google-java-format.version>
 		<spring-modulith.version>2.1.0</spring-modulith.version>
-		<archunit.version>1.5.0</archunit.version>
+		<archunit.version>1.5.1</archunit.version>
 		<springdoc-openapi.version>3.1.1</springdoc-openapi.version>
 		<jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
 		<sonar.organization>andrest3009</sonar.organization>
